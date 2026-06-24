@@ -1,8 +1,6 @@
 # Lockness Mentorship Programs 2026
 
 Two Lockness projects participate in LFX Mentorship Program 2026. This pages describes these projects, defines roadmap, centralizes all other docs.
-- [Advanced Threshold Key Management](), mentee: 
-- [Implement DKLs23 (threshold ECDSA) protocol](https://mentorship.lfx.linuxfoundation.org/project/0bc24781-b769-4808-8493-4a6066fecb9f), mentee: [@zheguang](https://github.com/zheguang)
 
 ## Advanced Threshold Key Management
 - LFX Mentorship platform: [link](https://mentorship.lfx.linuxfoundation.org/project/e27c5963-4a4c-4d17-98de-94d66eb8a2d6)
