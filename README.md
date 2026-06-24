@@ -25,3 +25,24 @@ In this project, the mentee builds production-ready lifecycle tooling for thresh
 | Key reshare implementation | Implement the protocol | Crate | 3 weeks |
 | Final evaluation | — | — | Nov 16–30 |
 
+## Threshold ECDSA (DKLS24/26) Implementation
+- LFX Mentorship platform: [link](https://mentorship.lfx.linuxfoundation.org/project/0bc24781-b769-4808-8493-4a6066fecb9f)
+- Mentee: [@zheguang](https://github.com/zheguang)
+- Duration: June 15 – Nov 30
+
+In this project, the mentee builds a production-ready, t-out-of-n threshold ECDSA signature library. The work translates the DKLS24 specification into secure Rust, heavily integrating the 2026 cryptanalytic mitigations by [Asharov26] to patch critical adaptive-input vulnerabilities. The implementation happens within the Lockness ecosystem using the `round-based` MPC framework and `generic-ec` library. 
+
+### Roadmap
+
+| Objective | Description | Output | Est. time |
+|---|---|---|---|
+| Foundations & Literature Review | Read [DKLS24] and [Asharov26].<br/> Grasp Secret Sharing, OT, and  VOLE. | Research notes | 2 weeks |
+| Keygen  | Implement Relaxed Keygen (Protocol 7.1) using `generic-ec`. | Crate | 2 weeks |
+| OT & RVOLE Specification | Write detailed specs for Sender-Random OT, SoftSpokenOT, and RVOLE. <br/>Explicitly define the architectural choice between Variant II and Variant III of [Asharov26]. | Spec | 2 weeks |
+| Base OT & SoftSpokenOT Implementation | Build the foundation OT and OT extension using the `round-based` framework. | Crate | 4-6 weeks |
+| Mid-Term evaluation | — | — | Aug 24–31 |
+| Random Vector OLE (RVOLE) Implementation | Implement the RVOLE engine.  | Crate | 3-4 weeks |
+| Threshold Signing Specification | Map the t-out-of-n state machine for signing from [DKLS24]. | Spec | 2 weeks |
+| Threshold Signing Implementation | Implement Rounds 1, 2, and 3. Assemble the final signature scalar securely. | Crate | 2-3 weeks |
+| Integration & E2E Testing | Build an integration harness combining keygen and signing over a simulated network loopback. Test adversarial edge cases and invalid consistency checks. | Test suite | 3 weeks |
+| Final evaluation | — | — | Nov 16–30 |
