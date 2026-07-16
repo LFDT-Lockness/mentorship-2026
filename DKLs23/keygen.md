@@ -45,7 +45,7 @@ Party $i$:
     - For $j \in [n]\setminus \{i\}$:
         - Abort if broadcast commitment not: $\text{Verify}(\text{ctx}, V_j, m_j, u_j)$
         - Abort if 2-party commitment not: $\text{Verify}(\text{ctx}', V'_j, m'_j, u'_j)$
-- Sum to $t$ subshare curve points for $k \in [0, t-1]: $P(k) = P_0(k) + P_1(k) + \cdots P_n(k)$
+- Sum to $t$ share curve points for $k \in [0, t-1]: $P(k) = P_0(k) + P_1(k) + \cdots P_n(k)$
 - Sum to share: $p(i) = p_1(i) + p_2(i) + \cdots + p_n(i)$
 - Compute share curve point $P_i = p(i) \cdot G$
 - Compute expected share curve point $Q$:
@@ -54,5 +54,6 @@ Party $i$:
     - Else build from lagrange $t$ curve points:
         - Form $t$ indexes: $S = [t-1] \cup \{i\}$
         - Let $\lambda_k \leftarrow \mathsf{lagrange}(S, k, 0) \in Z_q$
-        - $Q \leftarrow \lambda_i^{-1} \cdot (P(0) - (\lambda_1 \cdot P(1) + \lambda_2 \cdot P(2) + \cdots + \lambda_{t-1} P(t-1)))
+        - $Q \leftarrow \lambda_i^{-1} \cdot (P(0) - (\lambda_1 \cdot P(1) + \lambda_2 \cdot P(2) + \cdots + \lambda_{t-1} P(t-1)))$
 - Abort if $P_i \neq Q$
+- Output context id $\mathsf{sid}$, public key $pk = P(0)$, share $p(i)$
