@@ -42,11 +42,17 @@ Party $i$:
     - Parse each received $m_j$ as $(P_j(0), P_j(1), \cdots, P_j(t-1))$ from party $j$
     - Parse each received $m^\prime_j$ as $p_j(i)$ from party $j$
 - Echo agreement for broadcast commitments:
-    - Abort if exists $h_j \neq h_i$
+    - Abort if exists $h_j \neq h_i$: 
+        - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
+        - Go to next round
 - Binding
     - For $j \in [n]\setminus \{i\}$:
-        - Abort if broadcast commitment not: $\text{Verify}(\mathsf{ctx}, V_j, m_j, u_j)$
-        - Abort if 2-party commitment not: $\text{Verify}(\mathsf{ctx}^\prime, V^\prime_j, m^\prime_j, u^\prime_j)$
+        - Abort if broadcast commitment $\text{Verify}(\mathsf{ctx}, V_j, m_j, u_j)$ returns false: 
+            - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
+            - Go to next round
+        - Abort if 2-party commitment $\text{Verify}(\mathsf{ctx}^\prime, V^\prime_j, m^\prime_j, u^\prime_j)$ returns false
+            - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
+            - Go to next round
 - Sum to $t$ share curve points for $k \in [0, t-1]$: $P(k) = P_0(k) + P_1(k) + \cdots P_n(k)$
 - Sum to share: $p(i) = p_1(i) + p_2(i) + \cdots + p_n(i)$
 - Compute share curve point $P_i = p(i) \cdot G$
@@ -56,7 +62,17 @@ Party $i$:
     - Else build from lagrange $t$ curve points:
         - Form $t$ indexes: $S = [t-1] \cup \{i\}$
         - Compute $Q \leftarrow \lambda_i^{-1} \cdot (P(0) - (\lambda_1 \cdot P(1) + \lambda_2 \cdot P(2) + \cdots + \lambda_{t-1} P(t-1)))$ where
-            - $\lambda_k := \mathsf{lagrange}(S, k, 0) \in Z_q$
-            - $\mathsf{lagrange}(S, k, x) := \prod_{l\in S, l \neq k} (x-l) \cdot (k-l)^{-1} \in Z_q$
+            - $\lambda_k := \mathsf{lagrange}(S, k, 0) \in \mathbb{Z}_q$
+            - $\mathsf{lagrange}(S, k, x) := \prod_{l\in S, l \neq k} (x-l) \cdot (k-l)^{-1} \in \mathbb{Z}_q$
 - Abort if $P_i \neq Q$
-- Output context id $\mathsf{sid}$, public key $pk = P(0)$, share $p(i)$
+    - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
+    - Go to next round
+- Send $(\mathsf{Ok}, \mathsf{sid})$ to every other party
+
+## Round 4: Output
+
+Party $i$:
+- If sent $(\mathsf{Ok}, \mathsf{sid})$ to every other party, and received $(\mathsf{Ok}, \mathsf{sid})$ from every other party:
+    - Output $(\mathsf{Output}, \mathsf{sid}, P(0), p(i))$
+- Else abort
+    - Output $(\mathsf{Abort}, \mathsf{sid})$
