@@ -44,19 +44,19 @@ Party $i$:
 - Echo agreement for broadcast commitments:
     - Abort if exists $h_j \neq h_i$: 
         - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
-        - Go to next round
+        - Go to Output
 - Binding
     - For $j \in [n]\setminus \{i\}$:
         - Abort if broadcast commitment $\text{Verify}(\mathsf{ctx}, V_j, m_j, u_j)$ returns false: 
             - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
-            - Go to next round
+            - Go to Output
         - Abort if 2-party commitment $\text{Verify}(\mathsf{ctx}^\prime, V^\prime_j, m^\prime_j, u^\prime_j)$ returns false
             - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
             - Go to next round
 - Sum to $t$ share curve points for $k \in [0, t-1]$: $P(k) = P_0(k) + P_1(k) + \cdots P_n(k)$
 - Sum to share: $p(i) = p_1(i) + p_2(i) + \cdots + p_n(i)$
 - Compute share curve point $P_i = p(i) \cdot G$
-- Compute expected share curve point $Q$ as:
+- Compute expected share curve point $Q$ as follows:
     - If $i \in [t-1]$:
         - $Q \leftarrow P(i)$
     - Else build from lagrange $t$ curve points:
@@ -66,13 +66,14 @@ Party $i$:
             - $\mathsf{lagrange}(S, k, x) := \prod_{l\in S, l \neq k} (x-l) \cdot (k-l)^{-1} \in \mathbb{Z}_q$
 - Abort if $P_i \neq Q$
     - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
-    - Go to next round
+    - Go to Output
 - Send $(\mathsf{Ok}, \mathsf{sid})$ to every other party
 
-## Round 4: Output
+## Output
 
 Party $i$:
-- If sent $(\mathsf{Ok}, \mathsf{sid})$ to every other party, and received $(\mathsf{Ok}, \mathsf{sid})$ from every other party:
-    - Output $(\mathsf{Output}, \mathsf{sid}, P(0), p(i))$
-- Else abort
+- If received $(\mathsf{Abort}, \mathsf{sid})$ from any party, or sent $(\mathsf{Abort}, \mathsf{sid})$ to any party:
     - Output $(\mathsf{Abort}, \mathsf{sid})$
+    - Halt from this session $\mathsf{sid}$
+- If sent $(\mathsf{Ok}, \mathsf{sid})$ to every other party, and received $(\mathsf{Ok}, \mathsf{sid})$ from every other party:
+    - Output $(\mathsf{KeyPair}, \mathsf{sid}, P(0), p(i))$
