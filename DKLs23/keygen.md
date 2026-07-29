@@ -3,7 +3,7 @@
 ## Input
 
 - Number of signers $n \ge 2$
-- Party index $i$, $0 \le i \lt n$
+- Party index $i$, $1 \le i \le n$
 - Threshold parameter $t$, $2 \le t \lt n$
 - Context id $\mathsf{sid}$
 - Curve $\mathbb{E}$ with generator $G$ of prime order $q$
@@ -33,7 +33,7 @@ Party $i$:
     - Send $(\mathsf{NEcho}, \mathsf{sid}, h_i)$ to every other party
 - Open for broadcast commitments and 2-party commitments
     - Send $(\mathsf{NOpen}, \mathsf{sid}, m_i, u_i)$ to every other party
-    - Send $(\mathsf{2Open}, \mathsf{sid}, m^\prime_i, u^\prime_i)$ to every other party
+    - Send $(\mathsf{2Open}, \mathsf{sid}, m^\prime_i, u^\prime_i)$ to party $j$
 
 ## Round 3: verify
 
@@ -56,7 +56,7 @@ Party $i$:
 - Sum to $t$ share curve points for $k \in [0, t-1]$: $P(k) = P_0(k) + P_1(k) + \cdots P_n(k)$
 - Sum to share: $p(i) = p_1(i) + p_2(i) + \cdots + p_n(i)$
 - Compute share curve point $P_i = p(i) \cdot G$
-- Compute expected share curve point $Q$:
+- Compute expected share curve point $Q$ as:
     - If $i \in [t-1]$:
         - $Q \leftarrow P(i)$
     - Else build from lagrange $t$ curve points:
