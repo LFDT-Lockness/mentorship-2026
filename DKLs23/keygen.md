@@ -1,5 +1,9 @@
 # Threshold (i.e.,  $t$-out-of-$n$) relaxed distributed key generation
 
+## Functions
+- [Commitment](commitment.md) $\mathsf{Commit}$, $\mathsf{Verify}$
+- [Echo agreement](commitment.md) $\mathsf{EchoDigest}$, $\mathsf{EchoAgree}$
+
 ## Input
 
 - Number of signers $n \ge 2$
@@ -29,7 +33,7 @@ Party $i$:
 Party $i$:
 - Receive all broadcast commitments $\{V_j: j \neq i\}$ and 2-party commitments $\{V^\prime_j: j \neq i\}$
 - Echo for broadcast commitments:
-    - Compute echo digest $h_i = H(\mathsf{sid}, V_1, \cdots, V_n)$
+    - Compute echo digest $h_i = \mathsf{EchoDigest}(\mathsf{sid}, V_1, \cdots, V_n)$
     - Send $(\mathsf{NEcho}, \mathsf{sid}, h_i)$ to every other party
 - Open for broadcast commitments and 2-party commitments
     - Send $(\mathsf{NOpen}, \mathsf{sid}, m_i, u_i)$ to every other party
@@ -42,7 +46,7 @@ Party $i$:
     - Parse each received $m_j$ as $(P_j(0), P_j(1), \cdots, P_j(t-1))$ from party $j$
     - Parse each received $m^\prime_j$ as $p_j(i)$ from party $j$
 - Echo agreement for broadcast commitments:
-    - Abort if exists $h_j \neq h_i$: 
+    - Abort if exists $h_j$ such that $\mathsf{EchoAgree}(h_j, h_i)$ is false: 
         - Send $(\mathsf{Abort}, \mathsf{sid})$ to every other party
         - Go to Output
 - Binding
