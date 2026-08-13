@@ -1,0 +1,34 @@
+[package]
+name = "relaxed-keygen"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+round-based = { version = "0.5.0-alpha.1", default-features = false, features = ["derive"] }
+
+rand_core = { version = "0.6", default-features = false }
+sha2 = { version = "0.10", default-features = false }
+serde = { version = "1", default-features = false, features = ["derive", "alloc"] }
+
+thiserror = { version = "2", default-features = false }
+
+# We don't use it directy, but we need to enable `serde` feature
+generic-array = { version = "0.14", features = ["serde"] }
+
+udigest = { version = "0.2", default-features = false, features = ["derive", "digest", "alloc"], optional = true }
+
+generic-ec = { version = "0.5.2", default-features = false, features = ["alloc", "serde"] }
+generic-ec-zkp = { version = "0.5.0", default-features = false, features = ["alloc"] }
+
+[features]
+default = ["udigest"]
+# `generic-ec/udigest` makes `Point<E>` implement `udigest::Digestable`
+udigest = ["dep:udigest", "generic-ec/udigest"]
+
+[dev-dependencies]
+round-based = { version = "0.5.0-alpha.1", features = ["derive", "sim", "sim-async", "state-machine"]  }
+tokio = { version = "1.15", features = ["macros", "rt"] }
+rand_dev = "0.1"
+rand = "0.8"
+# Enable a concrete curve for the tests; the library itself stays curve-generic
+generic-ec = { version = "0.5.2", default-features = false, features = ["curve-secp256k1"] }
