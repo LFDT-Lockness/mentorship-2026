@@ -539,17 +539,6 @@ mod tests {
 
     #[tokio::test]
     async fn simulation_async() {
-        let (t, n) = (3, 5);
-        let mut rng = rand_dev::DevRng::new();
-
-        let key_shares = round_based::sim::async_env::run_with_setup(
-            core::iter::repeat_with(|| rng.fork()).take(n.into()),
-            |i, party, rng| relaxed_key_generation::<_, _, Secp256k1>(party, i + 1, n, t, SID, rng),
-        )
-        .await
-        .expect_ok()
-        .into_vec();
-
-        validate(t, n, &key_shares, &mut rng);
+        keygen_works(3, 5);
     }
 }
