@@ -168,7 +168,7 @@ where
     E: generic_ec::Curve,
 {
     // This party's routing index used by `round-based`.
-    // `round-based` labels parties by a 0-based routing index in `[0, n)`,
+    // `round-based` indexes parties by a 0-based routing index in `[0, n)`,
     // while the protocol math uses 1-based party labels `[1, n]`. 
     // We convert at every `round-based` boundary (round setup, `send_p2p` receiver, etc) to use
     // 0-based `me`, and keep the polynomial math in 1-based `i`.
@@ -215,7 +215,7 @@ where
     .await
     .map_err(Error::Round1Send)?;
 
-    // Pairwise commitment to each receiver's subshare. `send_to_all` borrows
+    // Pairwise commitment to each receiver's subshare.
     let receivers: Vec<PartyIndex> = (1..=n).filter(|&j| j != i).collect();
     let committed_subshares: Vec<CommittedSubshare<E>> = receivers.iter().map(|&j| CommittedSubshare {
         committer: i,
@@ -253,8 +253,6 @@ where
     let other_points_commitments: Vec<Output<Sha256>> =
         received_points_commitments.iter().map(|c| c.commitment).collect();
     // Rebuild the full n-length commitment vector in absolute party order for the echo digest. 
-    // Received commitments are in ascending 0-based sender order with self excluded, 
-    // so fill our own back in at our routing slot `me`.
     let all_points_commitments = [&other_points_commitments[0..me as usize], &[points_commitment], &other_points_commitments[me as usize..]].concat();
 
     let echo_digest = udigest::hash::<Sha256>(&EchoCommitments {
@@ -456,17 +454,6 @@ impl<RecvErr, SendErr> From<InternalErr> for Error<RecvErr, SendErr, InternalErr
     }
 }
 
-/*/// Blames a party in cheating during the protocol
-#[derive(Debug)]
-pub struct Blame {
-    /// Index of the cheated party
-    pub guilty_party: u16,
-    /// ID of the message that party sent in the first round
-    pub commitment_msg: MsgId,
-    /// ID of the message that party sent in the second round
-    pub decommitment_msg: MsgId,
-}*/
-
 #[cfg(test)]
 mod tests {
     use alloc::vec::Vec;
@@ -483,15 +470,16 @@ mod tests {
     /// - the direct branch (party labels `<= t-1`), 
     /// - the Lagrange branch (labels `>= t`), 
     /// - the full-threshold `t = n`
-    const SHAPES: &[(u16, u16)] = &[(2, 2), (2, 3), (3, 3), (3, 5), (5, 5)];
+    const CASES: &[(u16, u16)] = &[(2, 2), (2, 3), (3, 3), (3, 5), (5, 5)];
 
-    /// Interpolates the secret-sharing polynomial through `points` evaluated at `x`.
-    /// The `points` are (1-based label, share) pairs.
-    fn interpolate_at<E: Curve>(points: &[(u16, Scalar<E>)], x: Scalar<E>) -> Scalar<E> {
-        let xs: Vec<Scalar<E>> = points.iter().map(|(label, _)| Scalar::from(*label)).collect();
-        points.iter()
+    /// Interpolates the secret-sharing polynomial through `polynomial_points` evaluated at `x`,
+    /// where x is not an coordinate of one of the points.
+    /// The `polynomial_points` are (1-based label, share) pairs.
+    fn interpolate_at<E: Curve>(polynomial_points: &[(u16, Scalar<E>)], x: Scalar<E>) -> Scalar<E> {
+        let xs: Vec<Scalar<E>> = polynomial_points.iter().map(|(label, _)| Scalar::from(*label)).collect();
+        polynomial_points.iter()
             .enumerate().map(|(j, (_, share))| {
-                lagrange_coefficient(x, j, &xs).expect("x is not one of the labels") * *share
+                lagrange_coefficient(x, j, &xs).expect("x is not part of one of the polynomial points") * *share
             })
             .sum::<Scalar<E>>()
     }
@@ -544,7 +532,7 @@ mod tests {
 
     #[test]
     fn simulation() {
-        for &(t, n) in SHAPES {
+        for &(t, n) in CASES {
             keygen_works(t, n);
         }
     }
